@@ -1,0 +1,14 @@
+[k3sserver]
+192.168.1.250
+
+[k3sserver:vars]
+ansible_user=user
+ansible_ssh_pass='{{ lookup("env", "K3S_PASSWORD") }}'
+
+[k3node]
+192.168.1.251
+192.168.1.252
+
+[k3node:vars]
+ansible_user=user
+ansible_ssh_pass='{{ lookup("env", "K3S_PASSWORD") }}'

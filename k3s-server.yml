@@ -1,0 +1,6 @@
+- hosts: k3sserver
+  roles:
+    - common
+    - ca
+    - k3s-server
+    - registry

@@ -1,0 +1,33 @@
+- name: Create ca directory
+  become: yes
+  become_user: root
+  file: 
+    path: /etc/ca
+    state: directory
+
+- name: Place ca cert
+  become: yes
+  become_user: root
+  no_log: true
+  copy:
+    src: "{{ role_path }}/files/ca.crt"
+    dest: /etc/ca/ca.crt
+    mode: 0600
+
+- name: Place ca key
+  become: yes
+  become_user: root
+  no_log: true
+  copy:
+    src: "{{ role_path }}/files/ca.key.enc"
+    dest: /etc/ca/ca.key
+    mode: 0600
+
+- name: Place v3.ext
+  become: yes
+  become_user: root
+  no_log: true
+  copy:
+    src: "{{ role_path }}/files/v3.ext"
+    dest: /etc/ca/v3.ext
+    mode: 0600

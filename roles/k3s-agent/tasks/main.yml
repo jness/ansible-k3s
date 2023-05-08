@@ -1,0 +1,43 @@
+---
+- name: Place k3s installer
+  become: yes
+  become_user: root
+  copy:
+    src: "{{ role_path }}/files/installer.sh"
+    dest: /installer.sh
+    mode: 0755
+
+- name: Install k3s-agent
+  become: yes
+  become_user: root
+  command:
+    cmd: /installer.sh
+    creates: /etc/systemd/system/k3s-agent.service
+  environment:
+    K3S_URL: "{{ K3S_URL }}"
+    K3S_TOKEN: "{{ K3S_TOKEN }}"
+
+- name: Create k3s directory
+  become: yes
+  become_user: root
+  file: 
+    path: /etc/rancher/k3s
+    state: directory
+
+- name: Place k3s registries
+  become: yes
+  become_user: root
+  copy:
+    src: "{{ role_path }}/files/registries.yaml"
+    dest: /etc/rancher/k3s/registries.yaml
+    mode: 0644
+  register: k3s_registries_update
+
+- name: Restart k3s-agent
+  become: yes
+  become_user: root
+  service:
+    name: k3s-agent
+    state: restarted
+  when: k3s_registries_update.changed
+

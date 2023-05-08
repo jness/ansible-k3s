@@ -1,0 +1,4 @@
+- hosts: k3node
+  roles:
+    - common
+    - k3s-agent

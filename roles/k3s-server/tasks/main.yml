@@ -1,0 +1,57 @@
+---
+- name: Place k3s installer
+  become: yes
+  become_user: root
+  copy:
+    src: "{{ role_path }}/files/installer.sh"
+    dest: /installer.sh
+    mode: 0755
+
+- name: Install k3s (server)
+  become: yes
+  become_user: root
+  command:
+    cmd: /installer.sh
+    creates: /etc/systemd/system/k3s.service
+
+- name: Place k3s node-token
+  become: yes
+  become_user: root
+  no_log: true
+  template:
+    src: "{{ role_path }}/files/node-token.j2.enc"
+    dest: /var/lib/rancher/k3s/server/token
+    mode: 0600
+  register: k3s_node_token_update
+
+- name: Place k3s registries
+  become: yes
+  become_user: root
+  copy:
+    src: "{{ role_path }}/files/registries.yaml"
+    dest: /etc/rancher/k3s/registries.yaml
+    mode: 0644
+  register: k3s_registries_update
+
+- name: Restart k3s
+  become: yes
+  become_user: root
+  service:
+    name: k3s
+    state: restarted
+  when: k3s_registries_update.changed or k3s_node_token_update.changed
+
+- name: Create k3 deployment directory
+  become: yes
+  become_user: root
+  file: 
+    path: /etc/k3s-deployments/
+    state: directory
+
+- name: Place k3 registry-deployment
+  become: yes
+  become_user: root
+  copy:
+    src: "{{ role_path }}/files/k3s-deployments/registry-deployment.yml"
+    dest: /etc/k3s-deployments/registry-deployment.yml
+    mode: 0644

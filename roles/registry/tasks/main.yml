@@ -1,0 +1,22 @@
+- name: Create registry directory
+  become: yes
+  become_user: root
+  file: 
+    path: /etc/registry
+    state: directory
+
+- name: Place registries cert
+  become: yes
+  become_user: root
+  copy:
+    src: "{{ role_path }}/files/server.crt"
+    dest: /etc/registry/server.crt
+    mode: 0600
+
+- name: Place registries key
+  become: yes
+  become_user: root
+  copy:
+    src: "{{ role_path }}/files/server.key.enc"
+    dest: /etc/registry/server.key
+    mode: 0600

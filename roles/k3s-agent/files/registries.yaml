@@ -1,0 +1,4 @@
+mirrors:
+  local:
+    endpoint:
+      - "https://foo.bar:30495"
